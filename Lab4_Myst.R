@@ -58,11 +58,11 @@ MultPip_MT1 <- 10000
 
 # Import data
 (library(readxl))
-data=read.csv('data.csv')
+fulldata=read.csv('data.csv')
 
 # Filter data
-indicators=array(unique(data$Name))
-filter=data[data$Name==indicators[4],1:7]
+indicators=array(unique(fulldata$Name))
+filter=fulldata[fulldata$Name==indicators[4],1:7]
 
 
 # Clasification
@@ -82,6 +82,7 @@ data=data.frame(append(filter,t))
 
 
 window_prices <- list()
+metrics=data.frame("Name"=filter$DateTime,"Metric 1"=0,"Metric 2"=0,"Metric 3"=0)
 
 for(i in 1:length(data$DateTime)){
   
@@ -126,9 +127,20 @@ ind <- which(Precios_Oanda$TimeStamp == fecha)
 # durante el comunicado y 15 después del comunicado
 df <- Precios_Oanda[(ind-15):(ind+15),]
 window_prices[[i]]<-df
-m1<-sd(diff(log(window_prices[[1]]$Close))*10000)
-m2<-window_prices[[1]]$Close[[15]]-window_prices[[1]]$Close[[31]]
-m3<-(min(window_prices[[1]]$Low)-max(window_prices[[1]]$High))*10000
+metrics$Metric.1[[i]]<-sd(diff(log(window_prices[[i]]$Close))*MultPip_MT1)
+metrics$Metric.2[[i]]<-window_prices[[i]]$Close[[15]]-window_prices[[i]]$Close[[31]]
+metrics$Metric.3[[i]]<-(min(window_prices[[i]]$Low)-max(window_prices[[i]]$High))*MultPip_MT1
 }
 
+data=data.frame(append(data,metrics))
 
+## en esta tabla de resultados se muestra la concistencia de los resultados
+## de la metrica 2 segun el caso que se presento, la columna de los resultP 
+## significa el porcentaje de veces que se presento la clase y ademas la metrica 2 fue positiva
+## similar la columna de los resultN
+results=data.frame("case"=sort(unique(data$Class)),"resultP"=0,"resultN"=0)
+results$resultP[[4]]<-count(data$Class==4&data$Metric.2>0)[[2]][2]/count(data$Class==4)[[2]][2]
+results$resultP[[3]]<-count(data$Class==3&data$Metric.2>0)[[2]][2]/count(data$Class==3)[[2]][2]
+results$resultP[[2]]<-count(data$Class==2&data$Metric.2>0)[[2]][2]/count(data$Class==2)[[2]][2]
+results$resultP[[1]]<-count(data$Class==1&data$Metric.2>0)[[2]][2]/count(data$Class==1)[[2]][2]
+results$resultN= 1-results$resultP
