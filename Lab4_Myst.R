@@ -4,6 +4,7 @@ mdir <- getwd()
 
 ################################  PAQUETERIAS  ####################
 
+setwd("C:/Users/if702319/Desktop/Myst_lab4_AlfonsoAguilar")
 #Paqueteria
 # -- Establecer el sistema de medicion de la computadora
 Sys.setlocale(category = "LC_ALL", locale = "")
