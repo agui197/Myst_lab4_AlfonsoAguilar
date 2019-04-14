@@ -64,7 +64,7 @@ fulldata=read.csv('data.csv')
 # Filter data
 indicators=array(unique(fulldata$Name))
 filter=fulldata[fulldata$Name==indicators[4],1:7]
-
+  
 
 # Clasification
 a=filter$Actual>=filter$Consensus & filter$Consensus>=filter$Previous
